@@ -1,0 +1,40 @@
+<canvas id="canvas" width="500" height="500"></canvas>
+<script>
+  const canvas = document.getElementById("canvas");
+  const context = canvas.getContext("2d");
+  // Variables for 3d grid (Will not work with certain value combinations)
+  const fov = 128;
+  const viewDist = 5;
+  const viewAngleInDegrees = -27;
+  const numberOfGridLines = 20;
+
+  // draw vertical lines
+  for (let i = -numberOfGridLines / 2; i <= numberOfGridLines / 2; i++) {
+    const startLinePoint = get3dPoint(i, -numberOfGridLines / 2);
+    const endLinePoint = get3dPoint(i, numberOfGridLines / 2);
+    context.moveTo(startLinePoint[0], startLinePoint[1]);
+    context.lineTo(endLinePoint[0], endLinePoint[1]);
+  }
+
+  // draw horizontal lines
+  for (let i = -numberOfGridLines / 2; i <= numberOfGridLines / 2; i++) {
+    const startLinePoint = get3dPoint(-numberOfGridLines / 2, i);
+    const endLinePoint = get3dPoint(numberOfGridLines / 2, i);
+    context.moveTo(startLinePoint[0], startLinePoint[1]);
+    context.lineTo(endLinePoint[0], endLinePoint[1]);
+  }
+  context.stroke();
+
+  function get3dPoint(originalX, originalY) {
+    const radians = viewAngleInDegrees * Math.PI / 180;
+    const rotationY = originalY * Math.cos(radians);
+    const rotationZ = originalY * Math.sin(radians);
+
+    // Project the new coords into screen coords
+    const viewTransform = fov / (viewDist + rotationZ);
+    const newX = originalX * viewTransform + canvas.width / 2;
+    const newY = rotationY * viewTransform + canvas.height / 2;
+    return [newX, newY];
+  }
+
+</script>
